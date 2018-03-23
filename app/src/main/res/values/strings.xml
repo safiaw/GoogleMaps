@@ -2,4 +2,8 @@
     <string name="app_name">Google Places Detail</string>
     <string name="action_settings">Settings</string>
     <string name="label_btn_find">Find</string>
+    <string name="go_button">Go</string>
+    <string name="logout_button">Logout</string>
+    <string name="btnCheckin">Check In</string>
+    <string name="btnCheckout">Check Out</string>
 </resources>

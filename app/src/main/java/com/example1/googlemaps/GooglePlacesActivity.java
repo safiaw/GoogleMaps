@@ -10,10 +10,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -35,14 +37,16 @@ public class GooglePlacesActivity extends FragmentActivity implements LocationLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //show error dialog if GoolglePlayServices not available
+        //show error dialog if GooglePlayServices not available
         if (!isGooglePlayServicesAvailable()) {
             finish();
         }
         setContentView(R.layout.activity_google_places);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
-        placeText = (EditText) findViewById(R.id.placeText);
-        Button btnFind = (Button) findViewById(R.id.btnFind);
+        Button btnCheckin= (Button) findViewById(R.id.btn_checkin);
+        Button btnCheckout = (Button) findViewById(R.id.btn_checkout);
         SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.googleMap);
         googleMap = fragment.getMap();
         googleMap.setMyLocationEnabled(true);
@@ -63,12 +67,17 @@ public class GooglePlacesActivity extends FragmentActivity implements LocationLi
         if (location != null) {
             onLocationChanged(location);
         }
-        locationManager.requestLocationUpdates(bestProvider, 20000, 0, this);
+        locationManager.requestLocationUpdates(bestProvider, 0, 0, this);
 
-        btnFind.setOnClickListener(new OnClickListener() {
+        btnCheckin.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                String type = placeText.getText().toString();
+
+
+
+                // send checked-in building in-process status, name/details, lat & long
+                // also launch the donation screen
+                String type = "neighborhood";
                 StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
                 googlePlacesUrl.append("location=" + latitude + "," + longitude);
                 googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
@@ -81,6 +90,13 @@ public class GooglePlacesActivity extends FragmentActivity implements LocationLi
                 toPass[0] = googleMap;
                 toPass[1] = googlePlacesUrl.toString();
                 googlePlacesReadTask.execute(toPass);
+            }
+        });
+        btnCheckout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Send building done status, name, lat&long to the server
+                // Update the map with all the nearby building status/labels
             }
         });
     }
@@ -120,5 +136,9 @@ public class GooglePlacesActivity extends FragmentActivity implements LocationLi
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         // TODO Auto-generated method stub
+    }
+
+    public void setSupportActionBar(Toolbar supportActionBar) {
+        //this.supportActionBar = supportActionBar;
     }
 }
